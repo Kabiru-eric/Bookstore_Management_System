@@ -6,12 +6,15 @@ import com.Bookstore_management_system.bookstore_management_system.model.Book;
 import com.Bookstore_management_system.bookstore_management_system.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/books")
@@ -28,9 +31,8 @@ public class BookController {
             StringBuilder errorMessage = new StringBuilder("Validation failed: ");
             result.getFieldErrors().forEach(error -> {
                 errorMessage.append(error.getField())
-                        .append(" - ")
-      git                   .append(error.getDefaultMessage())
-     g                   .append("; ");
+                        .append(" - ").append(error.getDefaultMessage())
+                       .append("; ");
             });
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage.toString());
         }
@@ -74,15 +76,20 @@ public class BookController {
         }
     }
 
-    // GET /books - Retrieve all books
+    // GET /books - Retrieve all books with pagination and sorting
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
+    public ResponseEntity<Page<Book>> getAllBooks(
+            @RequestParam(defaultValue = "0") int page,      // Default page = 0
+            @RequestParam(defaultValue = "10") int size,     // Default size = 10
+            @RequestParam(defaultValue = "title") String sortBy) {  // Default sortBy = title
+
         try {
-            List<Book> books = bookService.getAllBooks();
-            return ResponseEntity.ok(books);
+            // Call the service to get the paginated and sorted list of books
+            Page<Book> booksPage = bookService.getAllBooks(page, size, sortBy);
+            return ResponseEntity.ok(booksPage);  // Return paginated and sorted books
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            // Return an error response in case of failure
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

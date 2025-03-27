@@ -6,6 +6,9 @@ import com.Bookstore_management_system.bookstore_management_system.model.Book;
 import com.Bookstore_management_system.bookstore_management_system.repository.BookRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,6 +57,12 @@ public class BookService {
     public Book getBookById(Long id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException("Book with id " + id + " not found."));
+    }
+    // Get all books with pagination and sorting
+    public Page<Book> getAllBooks(int page, int size, String sortBy) {
+        // Create Pageable object with page, size, and sortBy parameters
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy));
+        return bookRepository.findAll(pageRequest);  // Return paginated and sorted books
     }
 
     // Delete a book by ID
