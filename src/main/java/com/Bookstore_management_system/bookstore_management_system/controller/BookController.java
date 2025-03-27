@@ -29,8 +29,8 @@ public class BookController {
             result.getFieldErrors().forEach(error -> {
                 errorMessage.append(error.getField())
                         .append(" - ")
-                        .append(error.getDefaultMessage())
-                        .append("; ");
+      git                   .append(error.getDefaultMessage())
+     g                   .append("; ");
             });
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage.toString());
         }
